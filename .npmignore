@@ -43,5 +43,6 @@ Desktop.ini
 ehthumbs.db
 Icon?
 
-# Тесты
+# Тесты и окружение для них
 test
+webpack.config.js
