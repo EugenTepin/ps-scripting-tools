@@ -1,10 +1,9 @@
 module.exports = {
-    entry: {
-          main:  ['./index.js']
-          },
-    output: {
-            path: __dirname + '/test',
-            filename: '[name].test.jsx'
-        }
-};  
-
+	entry: {
+		main: ['./polyfill.js', './index.js']
+	},
+	output: {
+		path: __dirname + '/test',
+		filename: '[name].test.js'
+	}
+};

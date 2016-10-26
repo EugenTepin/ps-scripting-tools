@@ -11,9 +11,8 @@
     "url": "git+https://github.com/EugenTepin/ps-scripting-tools.git"
   },
   "keywords": [
-    "Photoshop",
-    "Adobe",
-    "scripting",
+    "Photoshop scripting",
+    "Adobe scripting",
     "ExtendScript"
   ],
   "author": "Eugen Tepin",
@@ -24,5 +23,8 @@
   "homepage": "https://github.com/EugenTepin/ps-scripting-tools#readme",
   "devDependencies": {
     "webpack": "^1.13.2"
+  },
+  "dependencies": {
+    "ps-scripting-es5shim": "0.0.1"
   }
 }
