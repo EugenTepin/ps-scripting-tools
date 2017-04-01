@@ -45,17 +45,475 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	__webpack_require__(1);
-	module.exports = __webpack_require__(28);
+	module.exports = __webpack_require__(2);
 
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(2);
+	__webpack_require__(11);
+
 
 /***/ },
 /* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var obj = {};
+	obj.addControl = __webpack_require__(10);
+	obj.alignLayer = __webpack_require__(3);
+	obj.beholder = __webpack_require__(37);
+	obj.getExtension = __webpack_require__(38);
+	obj.getFilesByExtension = __webpack_require__(39);
+	obj.getFolders = __webpack_require__(40);
+	obj.linkLayerWithMask = __webpack_require__(7);
+	obj.placeFile = __webpack_require__(5);
+	obj.resizeDocument = __webpack_require__(9);
+	obj.setDocumentResolution = __webpack_require__(41);
+	obj.setLayerMaskFromSelection = __webpack_require__(6);
+	obj.setSelectionByLayer = __webpack_require__(4);
+	obj.transferLayerStyle = __webpack_require__(8);
+	module.exports = obj;
+
+
+/***/ },
+/* 3 */
+/***/ function(module, exports) {
+
+	/**
+	 * Align layer with current selection in vertical and/or horizontal direction. 
+	 * If there is no selection in active document, will throw error!
+	 * @param {layer}  layer                  - Photoshop layer reference.
+	 * @param {object} direction              - object that holds aligment properties
+	 * @param {string} [direction.horizontal] - defines horizontal aligment, valid values left|center|right
+	 * @param {string} [direction.vertical]   - defines vertical aligment, valid values top|center|bottom
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(layer, direction) {
+
+	    try {
+	        app.activeDocument.selection.bounds
+	    } catch (e) {
+	        throw "There is no selection in current document, can not align layer.";
+	    }
+
+
+	    var currentLayer = app.activeDocument.activeLayer;
+	    app.activeDocument.activeLayer = layer;
+
+	    var alignMapVertical = {
+	        top: "AdTp",
+	        center: "AdCV",
+	        bottom: "AdBt"
+	    };
+
+	    var alignMapHorizontal = {
+	        left: "AdLf",
+	        center: "AdCH",
+	        right: "AdRg"
+	    };
+
+	    function alignLyr(dir) {
+	        var idAlgn = charIDToTypeID("Algn");
+	        var desc = new ActionDescriptor();
+	        var idnull = charIDToTypeID("null");
+	        var ref = new ActionReference();
+	        var idLyr = charIDToTypeID("Lyr ");
+	        var idOrdn = charIDToTypeID("Ordn");
+	        var idTrgt = charIDToTypeID("Trgt");
+	        ref.putEnumerated(idLyr, idOrdn, idTrgt);
+	        desc.putReference(idnull, ref);
+	        var idUsng = charIDToTypeID("Usng");
+	        var idADSt = charIDToTypeID("ADSt");
+	        var idAdTp = charIDToTypeID(dir);
+	        desc.putEnumerated(idUsng, idADSt, idAdTp);
+	        executeAction(idAlgn, desc, DialogModes.NO);
+	    }
+
+	    if ('horizontal' in direction) {
+	        var alignH = alignMapHorizontal[direction.horizontal];
+	        if (alignH !== void 0) {
+	            alignLyr(alignH);
+	        } else {
+	            app.activeDocument.activeLayer = currentLayer;
+	            throw "Unknown horizontal aligment parameter: " + direction.horizontal;
+	        }
+	    }
+
+	    if ('vertical' in direction) {
+	        var alignV = alignMapVertical[direction.vertical];
+	        if (alignV !== void 0) {
+	            alignLyr(alignV);
+	        } else {
+	            app.activeDocument.activeLayer = currentLayer;
+	            throw "Unknown vertical aligment parameter: " + direction.vertical;
+	        }
+	    }
+
+	    app.activeDocument.activeLayer = currentLayer;
+
+	    return layer;
+	}
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	/**
+	 * Set active selection according to layer or layer mask.
+	 * @param {string} layerName - layer name.
+	 * @param {string} area      - definese from wich boundaries (layer or layer mask) selection will be formed
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(layerName, area) {
+	    var selectionMap = {
+	        mask: "Msk ",
+	        layer: "Trsp"
+	    };
+
+	    if (selectionMap[area] !== void 0) {
+	        var idsetd = charIDToTypeID("setd");
+	        var desc19 = new ActionDescriptor();
+	        var idnull = charIDToTypeID("null");
+	        var ref9 = new ActionReference();
+	        var idChnl = charIDToTypeID("Chnl");
+	        var idfsel = charIDToTypeID("fsel");
+	        ref9.putProperty(idChnl, idfsel);
+	        desc19.putReference(idnull, ref9);
+	        var idT = charIDToTypeID("T   ");
+	        var ref10 = new ActionReference();
+	        var idChnl = charIDToTypeID("Chnl");
+	        var idChnl = charIDToTypeID("Chnl");
+	        var id = charIDToTypeID(selectionMap[area]);
+	        ref10.putEnumerated(idChnl, idChnl, id);
+	        var idLyr = charIDToTypeID("Lyr ");
+	        ref10.putName(idLyr, layerName);
+	        desc19.putReference(idT, ref10);
+	        executeAction(idsetd, desc19, DialogModes.NO);
+	    }
+	}
+
+/***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	/**
+	 * Places file in active document as smart object.
+	 * @param {file} file - ExtendScript file reference.
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(file) {
+	    var idPlc = charIDToTypeID("Plc ");
+	    var desc141 = new ActionDescriptor();
+	    var idnull = charIDToTypeID("null");
+	    desc141.putPath(idnull, file);
+	    var idFTcs = charIDToTypeID("FTcs");
+	    var idQCSt = charIDToTypeID("QCSt");
+	    var idQcsa = charIDToTypeID("Qcsa");
+	    desc141.putEnumerated(idFTcs, idQCSt, idQcsa);
+	    var idOfst = charIDToTypeID("Ofst");
+	    var desc142 = new ActionDescriptor();
+	    var idHrzn = charIDToTypeID("Hrzn");
+	    var idPxl = charIDToTypeID("#Pxl");
+	    desc142.putUnitDouble(idHrzn, idPxl, 0.000000);
+	    var idVrtc = charIDToTypeID("Vrtc");
+	    var idPxl = charIDToTypeID("#Pxl");
+	    desc142.putUnitDouble(idVrtc, idPxl, 0.000000);
+	    var idOfst = charIDToTypeID("Ofst");
+	    desc141.putObject(idOfst, idOfst, desc142);
+	    executeAction(idPlc, desc141, DialogModes.NO);
+	}
+
+/***/ },
+/* 6 */
+/***/ function(module, exports) {
+
+	/**
+	 * Set layer mask from active selection.
+	 * @param {layer} layer - Adobe Photoshop layer reference.
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(layer) {
+	    var currentLayer = app.activeDocument.activeLayer;
+	    app.activeDocument.activeLayer = layer;
+
+	    var idMk = charIDToTypeID("Mk  ");
+	    var desc29 = new ActionDescriptor();
+	    var idNw = charIDToTypeID("Nw  ");
+	    var idChnl = charIDToTypeID("Chnl");
+	    desc29.putClass(idNw, idChnl);
+	    var idAt = charIDToTypeID("At  ");
+	    var ref14 = new ActionReference();
+	    var idChnl = charIDToTypeID("Chnl");
+	    var idChnl = charIDToTypeID("Chnl");
+	    var idMsk = charIDToTypeID("Msk ");
+	    ref14.putEnumerated(idChnl, idChnl, idMsk);
+	    desc29.putReference(idAt, ref14);
+	    var idUsng = charIDToTypeID("Usng");
+	    var idUsrM = charIDToTypeID("UsrM");
+	    var idRvlS = charIDToTypeID("RvlS");
+	    desc29.putEnumerated(idUsng, idUsrM, idRvlS);
+	    executeAction(idMk, desc29, DialogModes.NO);
+
+	    app.activeDocument.activeLayer = currentLayer;
+	}
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	/**
+	 * Links or unlinks layer and its mask.
+	 * @param {layer}   layer - Photoshop layer reference.
+	 * @param {boolean} link  - true means layer and mask are linked, false means unlinked
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(layer, link) {
+	    // контроль типа входных параметров
+	    var currentLayer = app.activeDocument.activeLayer;
+	    app.activeDocument.activeLayer = layer;
+
+	    var idsetd = charIDToTypeID("setd");
+	    var desc294 = new ActionDescriptor();
+	    var idnull = charIDToTypeID("null");
+	    var ref171 = new ActionReference();
+	    var idLyr = charIDToTypeID("Lyr ");
+	    var idOrdn = charIDToTypeID("Ordn");
+	    var idTrgt = charIDToTypeID("Trgt");
+	    ref171.putEnumerated(idLyr, idOrdn, idTrgt);
+	    desc294.putReference(idnull, ref171);
+	    var idT = charIDToTypeID("T   ");
+	    var desc295 = new ActionDescriptor();
+	    var idUsrs = charIDToTypeID("Usrs");
+	    desc295.putBoolean(idUsrs, link);
+	    var idLyr = charIDToTypeID("Lyr ");
+	    desc294.putObject(idT, idLyr, desc295);
+	    executeAction(idsetd, desc294, DialogModes.NO);
+
+	    app.activeDocument.activeLayer = currentLayer;
+	}
+
+/***/ },
+/* 8 */
+/***/ function(module, exports) {
+
+	/**
+	 * Transfers layer style from one layer to another.
+	 * @param {layer} from - layer donor of layer style.
+	 * @param {layer} to   - layer recipient of layer style.
+	 *
+	 * @return {boolean} returns true if layer style transfer was succesfull, false otherwise.
+	 */
+	module.exports = function(from, to) {
+		var currentLayer = app.activeDocument.activeLayer;
+		try {
+			app.activeDocument.activeLayer = from;
+			var idCpFX = charIDToTypeID("CpFX");
+			executeAction(idCpFX, undefined, DialogModes.NO);
+
+			app.activeDocument.activeLayer = to;
+			var idPaFX = charIDToTypeID("PaFX");
+			var desc22 = new ActionDescriptor();
+			var idallowPasteFXOnLayerSet = stringIDToTypeID("allowPasteFXOnLayerSet");
+			desc22.putBoolean(idallowPasteFXOnLayerSet, true);
+			executeAction(idPaFX, desc22, DialogModes.NO);
+		} catch (e) {
+			app.activeDocument.activeLayer = currentLayer;
+			return false;
+		}
+		app.activeDocument.activeLayer = currentLayer;
+		return true;
+	}
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	/**
+	 * Resizes active document using props.
+	 * @param {document}   doc                               - Adobe Photoshop document reference.
+	 * @param {object}     props                             - object with resize parameters.
+	 * @param {unit value} props.widht                       - new width of active document.
+	 * @param {unit value} props.height                      - new height of active document.
+	 * @param {boolean}    [props.constrainProportions=true] - if true will constrain proportions of a document
+	 * @param {boolean}    [props.scaleStyles=true]          - if true will scale layer styles.
+	 * @param {string}     [props.method=bicubicAutomatic]   - which method of resampling to use: nearest|bilinear|bicubic|bicubicSmoother|bicubicSharper|bicubicAutomatic
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(doc, props) {
+
+	    var currentDoc = app.activeDocument;
+	    app.activeDocument = doc;
+	    var interpMethodsMap = {
+	        nearest: charIDToTypeID("Nrst"),
+	        bilinear: charIDToTypeID("Blnr"),
+	        bicubic: charIDToTypeID("Bcbc"),
+	        bicubicSmoother: stringIDToTypeID("bicubicSmoother"),
+	        bicubicSharper: stringIDToTypeID("bicubicSharper"),
+	        bicubicAutomatic: stringIDToTypeID("bicubicAutomatic"),
+	    };
+
+	    var proportion = ('constrainProportions' in props) ? props.constrainProportions : true;
+	    var scaleStyles = ('scaleStyles' in props) ? props.scaleStyles : true;
+
+	    var method = (interpMethodsMap[props.method]) ? interpMethodsMap[props.method] : interpMethodsMap['bicubicAutomatic'];
+	    var width = props.width;
+	    var height = props.height;
+
+	    if (!proportion) {
+	        var idImgS = charIDToTypeID("ImgS");
+	        var desc13 = new ActionDescriptor();
+	        var idWdth = charIDToTypeID("Wdth");
+	        var idPxl = charIDToTypeID("#Pxl");
+	        desc13.putUnitDouble(idWdth, idPxl, width.as("px"));
+	        var idHght = charIDToTypeID("Hght");
+	        var idPxl = charIDToTypeID("#Pxl");
+	        desc13.putUnitDouble(idHght, idPxl, height.as("px"));
+	        var idIntr = charIDToTypeID("Intr");
+	        var idIntp = charIDToTypeID("Intp");
+	        var idbicubicAutomatic = method;
+	        desc13.putEnumerated(idIntr, idIntp, idbicubicAutomatic);
+	        executeAction(idImgS, desc13, DialogModes.NO);
+	    } else {
+	        if (height !== undefined) {
+	            var idImgS = charIDToTypeID("ImgS");
+	            var desc12 = new ActionDescriptor();
+	            var idHght = charIDToTypeID("Hght");
+	            var idPxl = charIDToTypeID("#Pxl");
+	            desc12.putUnitDouble(idHght, idPxl, height.as("px"));
+	            var idscaleStyles = stringIDToTypeID("scaleStyles");
+	            desc12.putBoolean(idscaleStyles, scaleStyles);
+	            var idCnsP = charIDToTypeID("CnsP");
+	            desc12.putBoolean(idCnsP, true);
+	            var idIntr = charIDToTypeID("Intr");
+	            var idIntp = charIDToTypeID("Intp");
+	            var idbicubicAutomatic = method;
+	            desc12.putEnumerated(idIntr, idIntp, idbicubicAutomatic);
+	            executeAction(idImgS, desc12, DialogModes.NO);
+	        }
+
+	        if (width !== undefined) {
+	            var idImgS = charIDToTypeID("ImgS");
+	            var desc11 = new ActionDescriptor();
+	            var idWdth = charIDToTypeID("Wdth");
+	            var idPxl = charIDToTypeID("#Pxl");
+	            desc11.putUnitDouble(idWdth, idPxl, width.as("px"));
+	            var idscaleStyles = stringIDToTypeID("scaleStyles");
+	            desc11.putBoolean(idscaleStyles, scaleStyles);
+	            var idCnsP = charIDToTypeID("CnsP");
+	            desc11.putBoolean(idCnsP, true);
+	            var idIntr = charIDToTypeID("Intr");
+	            var idIntp = charIDToTypeID("Intp");
+	            var idbicubicAutomatic = method;
+	            desc11.putEnumerated(idIntr, idIntp, idbicubicAutomatic);
+	            executeAction(idImgS, desc11, DialogModes.NO);
+	        }
+	    }
+	    app.activeDocument = currentDoc;
+	}
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	/**
+	 * This function adds UI elements to window object. 
+	 * @example 
+	 * var dlg = new Window('dialog', 'Alert Box Builder', [0, 0, 500, 500]);
+	 *
+	 * var button = {
+	 * 	params:['button', undefined, "Say hello!"],
+	 * 	listners: {
+	 * 		click: function(){
+	 * 			alert('HI!');
+	 * 		}
+	 * 	}
+	 * };
+	 *
+	 * var group = {
+	 *   myGroup: {
+	 *      params: ['group'],
+	 *      props: {
+	 *          orientation: 'column',
+	 *          margins: [50, 50, 50, 50]
+	 *      },
+	 *      children: {
+	 *          myInput: {
+	 *              params: ["edittext", undefined, "0"]
+	 *              }
+	 *          },
+	 *          myBtn: button,
+	 *      }
+	 *   }
+	 * };
+	 *
+	 * addControl(dlg, group);
+	 *
+	 * //dlg.controls['myGroup'] - reference to group container
+	 * //dlg.controls['myInput'] - reference to edittext control
+	 * //dlg.controls['myBtn'] - reference to button control
+	 * 
+	 * dlg.center();
+	 * dlg.show();
+	 * 
+	 * @param {object} container - window or ui container object
+	 * @param {object} uiResObj  - special object wich hold information about child controls see example
+	 *
+	 * @return {undefined}
+	 */
+	function addControl(container, uiResObj) {
+	    var win = container.window;
+	    win.controls = win.controls || {};
+	    var controlsList = win.controls;
+	    for (var uiResObjID in uiResObj) {
+	        var uiResData = uiResObj[uiResObjID];
+	        var control = container.add.apply(container, uiResData.params);
+	        if ('props' in uiResData) {
+	            for (var prop in uiResData.props) {
+	                control[prop] = uiResData.props[prop];
+	            }
+	        }
+
+	        if ('listners' in uiResData) {
+	            for (var eventName in uiResData.listners) {
+	                var listners = uiResData.listners[eventName]
+	                if (listners.__class__ === 'Array') {
+	                    listners.forEach(function(listner) {
+	                        control.addEventListener(eventName, listner);
+	                    });
+	                    /*for (var i = 0; i < listners.length; i++) {
+	                    	control.addEventListener(eventName, listners[i]);
+	                    };*/
+	                }
+	                if (listners.__class__ === 'Function') {
+	                    control.addEventListener(eventName, listners);
+	                }
+	            }
+	        }
+
+	        if (uiResObjID in controlsList) {
+	            throw 'IDs name conflict, this window already has control with such id: ' + uiResObjID;
+	        } else {
+	            controlsList[uiResObjID] = control;
+	        }
+	        if ('children' in uiResData) {
+	            addControl(control, uiResData.children);
+	        }
+	    }
+
+	}
+
+	module.exports = addControl;
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -105,37 +563,37 @@
 
 
 	*/
-	__webpack_require__(3)
-
-	__webpack_require__(4)
-	__webpack_require__(5)
-	__webpack_require__(6)
-	__webpack_require__(7)
-	__webpack_require__(8)
-	__webpack_require__(9)
-	__webpack_require__(10)
-	__webpack_require__(11)
 	__webpack_require__(12)
+
 	__webpack_require__(13)
-
 	__webpack_require__(14)
+	__webpack_require__(15)
+	__webpack_require__(16)
+	__webpack_require__(17)
+	__webpack_require__(18)
+	__webpack_require__(19)
+	__webpack_require__(20)
+	__webpack_require__(21)
+	__webpack_require__(22)
 
-	__webpack_require__(15);
-	__webpack_require__(16);
-	__webpack_require__(17);
-	__webpack_require__(18);
-	__webpack_require__(19);
-	__webpack_require__(20);
-	__webpack_require__(21);
-	__webpack_require__(22);
-	__webpack_require__(23);
+	__webpack_require__(23)
+
 	__webpack_require__(24);
 	__webpack_require__(25);
 	__webpack_require__(26);
 	__webpack_require__(27);
+	__webpack_require__(28);
+	__webpack_require__(29);
+	__webpack_require__(30);
+	__webpack_require__(31);
+	__webpack_require__(32);
+	__webpack_require__(33);
+	__webpack_require__(34);
+	__webpack_require__(35);
+	__webpack_require__(36);
 
 /***/ },
-/* 3 */
+/* 12 */
 /***/ function(module, exports) {
 
 	/*
@@ -149,7 +607,7 @@
 	}
 
 /***/ },
-/* 4 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/*
@@ -217,7 +675,7 @@
 	}
 
 /***/ },
-/* 5 */
+/* 14 */
 /***/ function(module, exports) {
 
 	/*
@@ -261,7 +719,7 @@
 	}
 
 /***/ },
-/* 6 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/*
@@ -323,7 +781,7 @@
 	}
 
 /***/ },
-/* 7 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/*
@@ -396,7 +854,7 @@
 	}
 
 /***/ },
-/* 8 */
+/* 17 */
 /***/ function(module, exports) {
 
 	/*
@@ -413,7 +871,7 @@
 	}
 
 /***/ },
-/* 9 */
+/* 18 */
 /***/ function(module, exports) {
 
 	/*
@@ -456,7 +914,7 @@
 	}
 
 /***/ },
-/* 10 */
+/* 19 */
 /***/ function(module, exports) {
 
 	/*
@@ -544,7 +1002,7 @@
 	}
 
 /***/ },
-/* 11 */
+/* 20 */
 /***/ function(module, exports) {
 
 	/*
@@ -590,7 +1048,7 @@
 	}
 
 /***/ },
-/* 12 */
+/* 21 */
 /***/ function(module, exports) {
 
 	/*
@@ -635,7 +1093,7 @@
 	}
 
 /***/ },
-/* 13 */
+/* 22 */
 /***/ function(module, exports) {
 
 	/*
@@ -669,7 +1127,7 @@
 	}
 
 /***/ },
-/* 14 */
+/* 23 */
 /***/ function(module, exports) {
 
 	/*
@@ -705,7 +1163,7 @@
 	}
 
 /***/ },
-/* 15 */
+/* 24 */
 /***/ function(module, exports) {
 
 	if (!Object.create) {
@@ -763,7 +1221,7 @@
 	}
 
 /***/ },
-/* 16 */
+/* 25 */
 /***/ function(module, exports) {
 
 	/*
@@ -833,7 +1291,7 @@
 	}
 
 /***/ },
-/* 17 */
+/* 26 */
 /***/ function(module, exports) {
 
 	if (!Object.defineProperty) {
@@ -873,7 +1331,7 @@
 	}
 
 /***/ },
-/* 18 */
+/* 27 */
 /***/ function(module, exports) {
 
 	/*
@@ -894,7 +1352,7 @@
 	}
 
 /***/ },
-/* 19 */
+/* 28 */
 /***/ function(module, exports) {
 
 	if (!Object.getOwnPropertyDescriptor) {
@@ -926,7 +1384,7 @@
 	}
 
 /***/ },
-/* 20 */
+/* 29 */
 /***/ function(module, exports) {
 
 	if (!Object.getOwnPropertyNames) {
@@ -948,7 +1406,7 @@
 	}
 
 /***/ },
-/* 21 */
+/* 30 */
 /***/ function(module, exports) {
 
 	if (!Object.getPrototypeOf) {
@@ -961,7 +1419,7 @@
 	}
 
 /***/ },
-/* 22 */
+/* 31 */
 /***/ function(module, exports) {
 
 	// ES5 15.2.3.13
@@ -976,7 +1434,7 @@
 	}
 
 /***/ },
-/* 23 */
+/* 32 */
 /***/ function(module, exports) {
 
 	/*
@@ -994,7 +1452,7 @@
 	}
 
 /***/ },
-/* 24 */
+/* 33 */
 /***/ function(module, exports) {
 
 	/*
@@ -1012,7 +1470,7 @@
 	}
 
 /***/ },
-/* 25 */
+/* 34 */
 /***/ function(module, exports) {
 
 	/*
@@ -1046,7 +1504,7 @@
 	}
 
 /***/ },
-/* 26 */
+/* 35 */
 /***/ function(module, exports) {
 
 	/*
@@ -1068,7 +1526,7 @@
 	}
 
 /***/ },
-/* 27 */
+/* 36 */
 /***/ function(module, exports) {
 
 	/*
@@ -1089,122 +1547,93 @@
 	}
 
 /***/ },
-/* 28 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var beholder = __webpack_require__(29);
-	var test = __webpack_require__(30);
-
-	test();
-	var logListner = function(propName, oldProp, newProp) {
-	    $.writeln('==============');
-	    $.writeln(this.name + ' property ' + propName + ' changed');
-	    $.writeln('Was ' + oldProp);
-	    $.writeln('Become ' + newProp);
-	}
-
-	var computedListner = function(propName, oldProp, newProp) {
-	    this.computed = (propName === "b") ? (newProp + this.q) : (newProp + this.b);
-	    return newProp;
-	}
-
-
-
-	/*var obj1 = {
-	    name: "obj1",
-	    a: "string",
-	    b: 1,
-	    q: 2,
-	    c: {
-	        name: "obj1.c",
-	        ca: 123,
-	        cb: "adads"
-	    },
-	    d: (Folder.desktop).toSource(),
-	    computed: 0
-	};
-
-
-	var obj2 = {
-	    name: "obj2",
-	    a: "wrongggg",
-	    b: 15,
-	    c: {
-	        name: "obj2.c",
-	        ca: 456,
-	        cb: "yuiiiii"
-	    },
-	    d: (Folder.current).toSource()
-	};
-
-	beholder(obj1, {
-	    a: [logListner],
-	    b: [computedListner, logListner],
-	    q: [computedListner, logListner],
-	    computed: [logListner],
-	    c: {
-	        ca: [logListner]
-	    }
-	});
-	beholder(obj2, {
-	    a: [logListner],
-	    c: {
-	        ca: [logListner]
-	    }
-	});
-
-
-	obj1.b += 1;
-	obj1.q += 1;*/
-	/*store.c.ca += 100;
-	store.c.cb = "qwerty"; 
-	store.d = (Folder.current).toSource();
-	$.writeln(store.toSource());
-	*/
-	/*$.writeln(typeof (new File));
-	$.writeln(typeof (new Folder));
-	$.writeln(typeof [1,2,3]);
-	$.writeln(typeof "textttt");
-	$.writeln(typeof 1);
-	$.writeln(typeof true);*/
-
-	/*$.writeln("===========");
-	$.writeln((new File).toString ());
-	$.writeln((new Folder).toString ());
-	$.writeln([1,2,3].toString ());
-	$.writeln("textttt");
-	$.writeln(typeof 1);
-	$.writeln(typeof true);*/
-	 
-	/*var dlg = new Window('dialog', 'Alert Box Builder',[0,0,500,500]);
-	var input = dlg.add ("edittext" , [25,0,450,20], "0");
-	var btn = dlg.add ('button', [25,50,450,20], "Увеличить");
-
-
-
-
-	dlg.center();
-
-
-
-	dlg.show();*/
-
-/***/ },
-/* 29 */
+/* 37 */
 /***/ function(module, exports) {
 
-	module.exports = function beholder(obj, listners) {    for (var listnerProp in listners) {        if (listnerProp in obj) {            var propValue = obj[listnerProp];            var propListners = listners[listnerProp];            if (propValue.__class__ === 'Object') {                beholder(propValue, propListners);            } else {                (function(prop, propValue, propListners) {                    obj.watch(prop, function(propName, oldProp, newProp) {                        for (var i = 0; i < propListners.length; i++) {                            var listner = propListners[i];                            listner.apply(this, [propName, oldProp, newProp]);                        }                        return newProp;                    });                })(listnerProp, propValue, propListners);            }        }    }    return obj;}
+	/** * Binds watchers on object (obj) properies. Callbacks will fire when value of the property changes. * Works on nested objects (see example 'Basic usage'). Can be called on the same object as many times as needed, * but new watchers will replace old watchers on the same property of object (see example 'Multiple call'). * @example <caption>Basic usage.</caption> * var someObject = { * a: 1, * b: ['one','two'], * c: { *         ca: 1 *     } * }; * * function consoleLogger(propName, oldPropValue, newPropValue){ * // this is a points to parent object of property which is changed *     $.writeln('Property ('+ propName +') changed, was: ' + oldPropValue.toString() + ', become: ' + newPropValue.toString()); * } * * function anotherWatcher(propName, oldPropValue, newPropValue){ *  // do something else * } *  * var observable = { * a: [consoleLogger,anotherWatcher], * b: consoleLogger, * c: { *     ca: consoleLogger *     } * }; * * beholder(someObject,observable); * * someObject.a = 99; * //Property (a) changed, was: 1, become: 99 * * someObject.b.push('three'); * // nothing happens!! * // but, if * * someObject.b = ['one','two', 'three']; * // Property (b) changed, was: ['one','two'], become: ['one','two', 'three'] * * @example <caption>Multiple call</caption> * * var something = {a:1, b:'text'}; * * // asume that we have consoleLogger and anotherWatcher from example above * * beholder(something, {a: consoleLogger}); * * something.a = 32; * something.b = 'BIG text'; * * //Property (a) changed, was: 1, become: 32 *  *  * beholder(something, {a: anotherWatcher, b: consoleLogger}); * * something.a = 64; * something.b = 'small text'; * * // anotherWatcher replace the consoleLogger and fires on "a" change * //Property (b) changed, was: 'text', become: 'BIG text' *  * @param {object} obj            - on wich properties spy on. * @param {object} observableList - describes wich of properties changes should be handled and how * * @return {object} Returns obj */module.exports = function beholder(obj, observableList) {    for (var observablePropName in observableList) {        if (observablePropName in obj) {            var propertyValue = obj[observablePropName];            var propertyWatchers = observableList[observablePropName];            if (propertyValue.__class__ === 'Object' && propertyWatchers.__class__ === 'Object') {                beholder(propertyValue, propertyWatchers);            } else {                if (propertyWatchers.__class__ === 'Function') {                    propertyWatchers = [propertyWatchers];                }                if (propertyWatchers.__class__ === 'Array') {                    (function(prop, propertyWatchers) {                        obj.watch(prop, function(propName, oldProp, newProp) {                            propertyWatchers.forEach(function(watcher) {                                    if (watcher.__class__ === 'Function') {                                        watcher.apply(this, [propName, oldProp, newProp]);                                    }                                })                                /*                                for (var i = 0; i < propertyWatchers.length; i++) {                                    var watcher = propertyWatchers[i];                                    if (watcher.__class__ === 'Function') {                                        watcher.apply(this, [propName, oldProp, newProp]);                                    }                                }                                */                            return newProp;                        });                    })(observablePropName, propertyWatchers);                }            }        }    }    return obj;}
 
 /***/ },
-/* 30 */
+/* 38 */
 /***/ function(module, exports) {
 
-	module.exports = function(obj) {
-		a();
+	/**
+	 * Get extension from uri like string.
+	 * @param {string} fileName - uri like string.
+	 *
+	 * @return {string} file extension.
+	 */
+	module.exports = function(fileName) {
+		//проверка на тип входного параметра
+		return fileName.slice((fileName.lastIndexOf(".") - 1 >>> 0) + 2);
 	}
 
-	function a() {
-		alert('123456');
+/***/ },
+/* 39 */
+/***/ function(module, exports) {
+
+	/**
+	 * Seek files with given in extensionsList extensions in folder, and return them as an array.
+	 * @param {folder}          folder         - ExtendScript folder reference.
+	 * @param {string|string[]} extensionsList - list of files extensions to search in folder.
+	 *
+	 * @return {file[]} array of ExtendScript files objects.
+	 */
+	module.exports = function(folder, extensionsList) {
+		//проверка на тип входного параметра folder
+		if (extensionsList.__class__ === 'String') {
+			extensionsList = [extensionsList];
+		}
+		if (extensionsList.__class__ === 'Array') {
+			var r = new RegExp('\.(' + extensionsList.join('|') + ')$');
+			var callback = function(f) {
+				return (f instanceof File) && (r).test(f.absoluteURI.toLowerCase());
+			};
+			return folder.getFiles(callback);
+		}
+	}
+
+/***/ },
+/* 40 */
+/***/ function(module, exports) {
+
+	/**
+	 * Return array of subfolders (one level down) in folder.
+	 * @param {folder} folder - ExtendScript folder reference.
+	 *
+	 * @return {folder[]} array of ExtendScript folders objects.
+	 */
+	module.exports = function(folder) {
+		//проверка на тип folder
+		return folder.getFiles(
+			function(f) {
+				return (f instanceof Folder);
+			}
+		);
+	}
+
+/***/ },
+/* 41 */
+/***/ function(module, exports) {
+
+	/**
+	 * Sets dpi in specified document.
+	 * @param {document} doc        - Adobe Photoshop document reference.
+	 * @param {double}   resolution - dot per inch.
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(doc, resolution) {
+		var currentDoc = app.activeDocument;
+		app.activeDocument = doc;
+
+		var idImgS = charIDToTypeID("ImgS");
+		var desc10 = new ActionDescriptor();
+		var idRslt = charIDToTypeID("Rslt");
+		var idRsl = charIDToTypeID("#Rsl");
+		desc10.putUnitDouble(idRslt, idRsl, resolution);
+		executeAction(idImgS, desc10, DialogModes.NO);
+
+		app.activeDocument = currentDoc;
 	}
 
 /***/ }

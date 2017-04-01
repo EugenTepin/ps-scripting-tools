@@ -45,4 +45,6 @@ Icon?
 
 # Тесты и окружение для них
 test
+test.js
 webpack.config.js
+webpack watch.cmd
