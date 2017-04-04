@@ -1,10 +1,12 @@
 # ps-scripting-tools
 This is set of helper functions for extend scripts that run into Adobe Photoshop.
+
 # Installation
 
 ```npm install ps-scripting-tools```
 
 # Reference
+
 ### addControl
 Adds UI elements to window object.
 
