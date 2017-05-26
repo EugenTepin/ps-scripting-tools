@@ -1093,139 +1093,316 @@
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-	//var beholder = require('./lib/dataBinding/beholder.js');
-	//var addControl = require('./lib/addControl.js');
 	var dialogs = app.displayDialogs;
 	app.displayDialogs = DialogModes.NO;
-
+	var startRulerUnits = app.preferences.rulerUnits;
+	app.preferences.rulerUnits = Units.PIXELS;
 
 	var addControl = __webpack_require__(29);
-	/*
-	var alignLayer = require('./lib/alignLayer.js');
-	var setSelectionByLayer = require('./lib/setSelectionByLayer.js');
-	var placeFile = require('./lib/placeFile.js');
-	var setLayerMaskFromSelection = require('./lib/setLayerMaskFromSelection.js');
-	var linkLayerWithMask = require('./lib/linkLayerWithMask.js');
-	var transferLayerStyle = require('./lib/transferLayerStyle.js');
-	var resizeDocument = require('./lib/resizeDocument.js');
-	*/
-
-	/*
-	todo
-
-	test addControl
-	test beholder
-	test alignLayer
-	test getExtension
-
-	 */
-
-	/*var testFile = new File(Folder.desktop + '/psyduck.gif');
-	var killFile = new File(Folder.desktop + '/kill.tif');
-
-	var tpl = new Template(killFile);
-	tpl.open();
-	var lyr1 = tpl.findLayer('Layer 1');
-	var lyr2 = tpl.findLayer('Layer 2');
-	//var lyr3 = tpl.findLayer('txt');
-
-	tpl.insertPicture(lyr2, testFile);
-	tpl.insertPicture(lyr1, testFile);*/
-
-	/*
-	var l = doc.artLayers.getByName("Layer 2");
-	var psy = doc.artLayers.getByName("psyduck");
+	var alignLayer = __webpack_require__(30);
+	var beholder = __webpack_require__(31);
+	var getExtension = __webpack_require__(32);
+	var getFilesByExtension = __webpack_require__(33);
+	var getFolders = __webpack_require__(34);
+	var linkLayerWithMask = __webpack_require__(35);
+	var placeFile = __webpack_require__(36);
+	var replaceContent = __webpack_require__(45);
+	var resizeDocument = __webpack_require__(38);
+	var setDocumentResolution = __webpack_require__(37);
+	var setLayerMaskFromSelection = __webpack_require__(42);
+	var setSelectionByLayer = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./lib/setSelectionByLayer.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var transferLayerStyle = __webpack_require__(41);
 
 
-	resizeDocument(doc, {
-	    width: new UnitValue(1000, 'px')
-	});*/
+	var root = (new File($.fileName)).parent.parent;
+	//alert(root);
 
-	//transferLayerStyle(l, psy);
-	//linkLayerWithMask(psy, true);
-
-	//setLayerMaskFromSelection(psy);
-
-	//var f = new File('/c/Users/Eugen/Desktop/psyduck.gif');
-	//placeFile(f);
+	var template = new File(root + '/test/template.tif')
+	var photo = new File(root + '/test/watch.jpg')
 
 
-	//setSelectionByLayer(l, 'layer');
+	app.open(template);
+	var doc = app.activeDocument;
+	doc.suspendHistory("testing ps-script-tools", "main();");
 
-	/*alignLayer(l, {
-	    horizontal: 'right',
-	    vertical: 'top'
-	});*/
+	//app.activeDocument.activeLayer = layer;
 
-
-	/*var dlg = new Window('dialog', 'Alert Box Builder', [0, 0, 500, 500]);
-
-
-	var guiObj = {
-	    myGroup: {
-	        params: ['group'],
-	        props: {
-	            orientation: 'column',
-	            margins: [50, 50, 50, 50]
-	        },
-	        children: {
-	            myInput: {
-	                params: ["edittext", undefined, "0"],
-	                listners: {
-	                    click: [
-	                        function(e) {
-	                            alert('hi!');
-	                        },
-	                        function(e) {
-	                            alert('Second Handler!');
-	                        },
-	                    ]
-	                }
-	            },
-	            myBtn: {
-	                params: ['button', undefined, "Увеличить"]
-	            }
-	        }
-	    }
-	};
+	function main() {
+	    replaceContent(photo, doc.layers.getByName('t1'), { method: 'conform', horizontal: 'right', vertical: 'top', revealAll: true });
+	 replaceContent(photo, doc.layers.getByName('t2'), { method: 'conform', horizontal: 'center', vertical: 'top', revealAll: true });
+	 replaceContent(photo, doc.layers.getByName('t3'), { method: 'conform', horizontal: 'left', vertical: 'top', revealAll: true });
+	 replaceContent(photo, doc.layers.getByName('t4'), { method: 'conform', horizontal: 'right', vertical: 'center', revealAll: true });
+	 replaceContent(photo, doc.layers.getByName('t5'), { method: 'conform', horizontal: 'left', vertical: 'center', revealAll: true });
+	 replaceContent(photo, doc.layers.getByName('t6'), { method: 'conform', horizontal: 'right', vertical: 'bottom', revealAll: true });
+	 replaceContent(photo, doc.layers.getByName('t7'), { method: 'conform', horizontal: 'center', vertical: 'bottom', revealAll: true });
+	 replaceContent(photo, doc.layers.getByName('t8'), { method: 'conform', horizontal: 'left', vertical: 'bottom', revealAll: true });
 
 
-	var logPanel = {
-	    logPanel: {
-	        params: ['panel', undefined, 'Info', {
-	            borderStyle: 'gray'
-	        }],
-	        props: {},
-	        children: {
-	            log: {
-	                params: ['edittext', undefined, '', {
-	                    readonly: true,
-	                    borderless: true,
-	                    multiline: true
-	                }]
-	            }
-	        }
-	    }
+	    // replaceContent(photo, doc.layers.getByName('t1'), { method: 'as is', horizontal: 'right', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t2'), { method: 'as is', horizontal: 'center', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t3'), { method: 'as is', horizontal: 'left', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t4'), { method: 'as is', horizontal: 'right', vertical: 'center', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t5'), { method: 'as is', horizontal: 'left', vertical: 'center', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t6'), { method: 'as is', horizontal: 'right', vertical: 'bottom', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t7'), { method: 'as is', horizontal: 'center', vertical: 'bottom', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t8'), { method: 'as is', horizontal: 'left', vertical: 'bottom', revealAll: true });
+
+	    // replaceContent(photo, doc.layers.getByName('t1'), { method: 'fit', horizontal: 'right', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t2'), { method: 'fit', horizontal: 'center', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t3'), { method: 'fit', horizontal: 'left', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t4'), { method: 'fit', horizontal: 'right', vertical: 'center', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t5'), { method: 'fit', horizontal: 'left', vertical: 'center', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t6'), { method: 'fit', horizontal: 'right', vertical: 'bottom', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t7'), { method: 'fit', horizontal: 'center', vertical: 'bottom', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t8'), { method: 'fit', horizontal: 'left', vertical: 'bottom', revealAll: true });
+
+	    // replaceContent(photo, doc.layers.getByName('t1'), { method: 'fill', horizontal: 'right', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t2'), { method: 'fill', horizontal: 'center', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t3'), { method: 'fill', horizontal: 'left', vertical: 'top', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t4'), { method: 'fill', horizontal: 'right', vertical: 'center', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t5'), { method: 'fill', horizontal: 'left', vertical: 'center', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t6'), { method: 'fill', horizontal: 'right', vertical: 'bottom', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t7'), { method: 'fill', horizontal: 'center', vertical: 'bottom', revealAll: true });
+	    // replaceContent(photo, doc.layers.getByName('t8'), { method: 'fill', horizontal: 'left', vertical: 'bottom', revealAll: true });
+
+	    //===================================================================================
+
+	    // replaceContent(photo, doc.layers.getByName('t1'), { method: 'conform', horizontal: 'right', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t2'), { method: 'conform', horizontal: 'center', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t3'), { method: 'conform', horizontal: 'left', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t4'), { method: 'conform', horizontal: 'right', vertical: 'center', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t5'), { method: 'conform', horizontal: 'left', vertical: 'center', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t6'), { method: 'conform', horizontal: 'right', vertical: 'bottom', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t7'), { method: 'conform', horizontal: 'center', vertical: 'bottom', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t8'), { method: 'conform', horizontal: 'left', vertical: 'bottom', revealAll: false });
+
+
+	    // replaceContent(photo, doc.layers.getByName('t1'), { method: 'as is', horizontal: 'right', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t2'), { method: 'as is', horizontal: 'center', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t3'), { method: 'as is', horizontal: 'left', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t4'), { method: 'as is', horizontal: 'right', vertical: 'center', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t5'), { method: 'as is', horizontal: 'left', vertical: 'center', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t6'), { method: 'as is', horizontal: 'right', vertical: 'bottom', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t7'), { method: 'as is', horizontal: 'center', vertical: 'bottom', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t8'), { method: 'as is', horizontal: 'left', vertical: 'bottom', revealAll: false });
+
+	    // replaceContent(photo, doc.layers.getByName('t1'), { method: 'fit', horizontal: 'right', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t2'), { method: 'fit', horizontal: 'center', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t3'), { method: 'fit', horizontal: 'left', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t4'), { method: 'fit', horizontal: 'right', vertical: 'center', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t5'), { method: 'fit', horizontal: 'left', vertical: 'center', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t6'), { method: 'fit', horizontal: 'right', vertical: 'bottom', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t7'), { method: 'fit', horizontal: 'center', vertical: 'bottom', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t8'), { method: 'fit', horizontal: 'left', vertical: 'bottom', revealAll: false });
+
+	    // replaceContent(photo, doc.layers.getByName('t1'), { method: 'fill', horizontal: 'right', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t2'), { method: 'fill', horizontal: 'center', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t3'), { method: 'fill', horizontal: 'left', vertical: 'top', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t4'), { method: 'fill', horizontal: 'right', vertical: 'center', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t5'), { method: 'fill', horizontal: 'left', vertical: 'center', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t6'), { method: 'fill', horizontal: 'right', vertical: 'bottom', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t7'), { method: 'fill', horizontal: 'center', vertical: 'bottom', revealAll: false });
+	    // replaceContent(photo, doc.layers.getByName('t8'), { method: 'fill', horizontal: 'left', vertical: 'bottom', revealAll: false });
+
+
+
+
+	    // ============================== PLACE
+	    /*
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'left', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'center', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'right', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'left', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'center', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'right', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'left', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'center', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'right', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'left', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'center', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'right', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'left', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'center', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'right', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'left', vertical: 'bottom', linked: false });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'center', vertical: 'bottom', linked: false });
+	    placeFile(photo, undefined, { method: 'conform', horizontal: 'right', vertical: 'bottom', linked: false });
+	    */
+
+	    /*
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'left', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'center', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'right', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'left', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'center', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'right', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'left', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'center', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'right', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'left', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'center', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'right', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'left', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'center', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'right', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'left', vertical: 'bottom', linked: false });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'center', vertical: 'bottom', linked: false });
+	    placeFile(photo, undefined, { method: 'as is', horizontal: 'right', vertical: 'bottom', linked: false });
+	    */
+	    /*
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'left', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'center', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'right', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'left', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'center', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'right', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'left', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'center', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'right', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'left', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'center', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'right', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'left', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'center', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'right', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'left', vertical: 'bottom', linked: false });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'center', vertical: 'bottom', linked: false });
+	    placeFile(photo, undefined, { method: 'fit', horizontal: 'right', vertical: 'bottom', linked: false });
+	    */
+	    /*
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'left', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'center', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'right', vertical: 'top', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'left', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'center', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'right', vertical: 'center', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'left', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'center', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'right', vertical: 'bottom', linked: true });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'left', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'center', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'right', vertical: 'top', linked: false });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'left', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'center', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'right', vertical: 'center', linked: false });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'left', vertical: 'bottom', linked: false });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'center', vertical: 'bottom', linked: false });
+	    placeFile(photo, undefined, { method: 'fill', horizontal: 'right', vertical: 'bottom', linked: false });
+	    */
+
+
+
+
+	    /*placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'left', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'center', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'right', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'left', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'center', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'right', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'left', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'center', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'right', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'left', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'center', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'right', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'left', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'center', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'right', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'left', vertical: 'bottom', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'center', vertical: 'bottom', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'conform', horizontal: 'right', vertical: 'bottom', copyLayerStyle: false });
+	    */
+
+	    /*
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'left', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'center', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'right', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'left', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'center', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'right', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'left', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'center', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'right', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'left', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'center', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'right', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'left', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'center', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'right', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'left', vertical: 'bottom', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'center', vertical: 'bottom', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'as is', horizontal: 'right', vertical: 'bottom', copyLayerStyle: false });
+	    */
+
+	    /*
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'left', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'center', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'right', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'left', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'center', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'right', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'left', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'center', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'right', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'left', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'center', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'right', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'left', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'center', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'right', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'left', vertical: 'bottom', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'center', vertical: 'bottom', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test1'), { method: 'fill', horizontal: 'right', vertical: 'bottom', copyLayerStyle: false });
+	    */
+
+	    /*placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'left', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'center', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'right', vertical: 'top', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'left', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'center', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'right', vertical: 'center', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'left', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'center', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'right', vertical: 'bottom', copyLayerStyle: true });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'left', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'center', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'right', vertical: 'top', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'left', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'center', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'right', vertical: 'center', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'left', vertical: 'bottom', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'center', vertical: 'bottom', copyLayerStyle: false });
+	    placeFile(photo, doc.layers.getByName('test3'), { method: 'fit', horizontal: 'right', vertical: 'bottom', copyLayerStyle: false });*/
+
+	    /*
+	    placeFile(photo, doc.layers.getByName('test1'), { method: '', horizontal: '', vertical: '', copyLayerStyle: });
+
+
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    placeFile(photo, doc.layers.getByName(''), { method: '', horizontal: '', vertical: '', linked: , copyLayerStyle: });
+	    */
 	}
-
-
-
-	addControl(dlg, guiObj);
-	addControl(dlg, logPanel);
-
-
-	$.writeln(dlg.controls['myGroup'].visible);
-
-	dlg.controls['myBtn'].onClick = function() {
-	    alert('1,2,3');
-	};
-
-	dlg.layout.layout(true);
-	dlg.center();
-	dlg.show();
-	*/
-
 	app.displayDialogs = dialogs;
+	app.preferences.rulerUnits = startRulerUnits;
 
 
 /***/ },
@@ -1320,6 +1497,796 @@
 	}
 
 	module.exports = addControl;
+
+
+/***/ },
+/* 30 */
+/***/ function(module, exports) {
+
+	/**
+	 * Align layer with current selection in vertical and/or horizontal direction. 
+	 * If there is no selection in active document, will throw error!
+	 * @param {layer}  layer                  - Photoshop layer reference.
+	 * @param {object} direction              - object that holds aligment properties
+	 * @param {string} [direction.horizontal] - defines horizontal aligment, valid values left|center|right
+	 * @param {string} [direction.vertical]   - defines vertical aligment, valid values top|center|bottom
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(layer, direction) {
+
+	    try {
+	        app.activeDocument.selection.bounds
+	    } catch (e) {
+	        throw "There is no selection in current document, can not align layer.";
+	    }
+
+
+	    var currentLayer = app.activeDocument.activeLayer;
+	    app.activeDocument.activeLayer = layer;
+
+	    var alignMapVertical = {
+	        top: "AdTp",
+	        center: "AdCV",
+	        bottom: "AdBt"
+	    };
+
+	    var alignMapHorizontal = {
+	        left: "AdLf",
+	        center: "AdCH",
+	        right: "AdRg"
+	    };
+
+	    function alignLyr(dir) {
+	        var idAlgn = charIDToTypeID("Algn");
+	        var desc = new ActionDescriptor();
+	        var idnull = charIDToTypeID("null");
+	        var ref = new ActionReference();
+	        var idLyr = charIDToTypeID("Lyr ");
+	        var idOrdn = charIDToTypeID("Ordn");
+	        var idTrgt = charIDToTypeID("Trgt");
+	        ref.putEnumerated(idLyr, idOrdn, idTrgt);
+	        desc.putReference(idnull, ref);
+	        var idUsng = charIDToTypeID("Usng");
+	        var idADSt = charIDToTypeID("ADSt");
+	        var idAdTp = charIDToTypeID(dir);
+	        desc.putEnumerated(idUsng, idADSt, idAdTp);
+	        executeAction(idAlgn, desc, DialogModes.NO);
+	    }
+
+	    if ('horizontal' in direction) {
+	        var alignH = alignMapHorizontal[direction.horizontal];
+	        if (alignH !== void 0) {
+	            alignLyr(alignH);
+	        } else {
+	            app.activeDocument.activeLayer = currentLayer;
+	            throw "Unknown horizontal aligment parameter: " + direction.horizontal;
+	        }
+	    }
+
+	    if ('vertical' in direction) {
+	        var alignV = alignMapVertical[direction.vertical];
+	        if (alignV !== void 0) {
+	            alignLyr(alignV);
+	        } else {
+	            app.activeDocument.activeLayer = currentLayer;
+	            throw "Unknown vertical aligment parameter: " + direction.vertical;
+	        }
+	    }
+
+	    app.activeDocument.activeLayer = currentLayer;
+
+	    return layer;
+	}
+
+/***/ },
+/* 31 */
+/***/ function(module, exports) {
+
+	/** * Binds watchers on object (obj) properies. Callbacks will fire when value of the property changes. * Works on nested objects (see example 'Basic usage'). Can be called on the same object as many times as needed, * but new watchers will replace old watchers on the same property of object (see example 'Multiple call'). * @example <caption>Basic usage.</caption> * var someObject = { * a: 1, * b: ['one','two'], * c: { *         ca: 1 *     } * }; * * function consoleLogger(propName, oldPropValue, newPropValue){ * // this is a points to parent object of property which is changed *     $.writeln('Property ('+ propName +') changed, was: ' + oldPropValue.toString() + ', become: ' + newPropValue.toString()); * } * * function anotherWatcher(propName, oldPropValue, newPropValue){ *  // do something else * } *  * var observable = { * a: [consoleLogger,anotherWatcher], * b: consoleLogger, * c: { *     ca: consoleLogger *     } * }; * * beholder(someObject,observable); * * someObject.a = 99; * //Property (a) changed, was: 1, become: 99 * * someObject.b.push('three'); * // nothing happens!! * // but, if * * someObject.b = ['one','two', 'three']; * // Property (b) changed, was: ['one','two'], become: ['one','two', 'three'] * * @example <caption>Multiple call</caption> * * var something = {a:1, b:'text'}; * * // asume that we have consoleLogger and anotherWatcher from example above * * beholder(something, {a: consoleLogger}); * * something.a = 32; * something.b = 'BIG text'; * * //Property (a) changed, was: 1, become: 32 *  *  * beholder(something, {a: anotherWatcher, b: consoleLogger}); * * something.a = 64; * something.b = 'small text'; * * // anotherWatcher replace the consoleLogger and fires on "a" change * //Property (b) changed, was: 'text', become: 'BIG text' *  * @param {object} obj            - on wich properties spy on. * @param {object} observableList - describes wich of properties changes should be handled and how * * @return {object} Returns obj */module.exports = function beholder(obj, observableList) {    for (var observablePropName in observableList) {        if (observablePropName in obj) {            var propertyValue = obj[observablePropName];            var propertyWatchers = observableList[observablePropName];            if (propertyValue.__class__ === 'Object' && propertyWatchers.__class__ === 'Object') {                beholder(propertyValue, propertyWatchers);            } else {                if (propertyWatchers.__class__ === 'Function') {                    propertyWatchers = [propertyWatchers];                }                if (propertyWatchers.__class__ === 'Array') {                    (function(prop, propertyWatchers) {                        obj.watch(prop, function(propName, oldProp, newProp) {                            propertyWatchers.forEach(function(watcher) {                                if (watcher.__class__ === 'Function') {                                    watcher.apply(this, [propName, oldProp, newProp]);                                }                            }, this);                            /*                            for (var i = 0; i < propertyWatchers.length; i++) {                                var watcher = propertyWatchers[i];                                if (watcher.__class__ === 'Function') {                                    watcher.apply(this, [propName, oldProp, newProp]);                                }                            }                            */                            return newProp;                        });                    })(observablePropName, propertyWatchers);                }            }        }    }    return obj;}
+
+/***/ },
+/* 32 */
+/***/ function(module, exports) {
+
+	/**
+	 * Get extension from uri like string.
+	 * @param {string} fileName - uri like string.
+	 *
+	 * @return {string} file extension.
+	 */
+	module.exports = function(fileName) {
+		//проверка на тип входного параметра
+		return fileName.slice((fileName.lastIndexOf(".") - 1 >>> 0) + 2);
+	}
+
+/***/ },
+/* 33 */
+/***/ function(module, exports) {
+
+	/**
+	 * Seek files with given in extensionsList extensions in folder, and return them as an array.
+	 * @param {folder}          folder         - ExtendScript folder reference.
+	 * @param {string|string[]} extensionsList - list of files extensions to search in folder.
+	 *
+	 * @return {file[]} array of ExtendScript files objects.
+	 */
+	module.exports = function(folder, extensionsList) {
+		//проверка на тип входного параметра folder
+		if (extensionsList.__class__ === 'String') {
+			extensionsList = [extensionsList];
+		}
+		if (extensionsList.__class__ === 'Array') {
+			var r = new RegExp('\.(' + extensionsList.join('|') + ')$');
+			var callback = function(f) {
+				return (f instanceof File) && (r).test(f.absoluteURI.toLowerCase());
+			};
+			return folder.getFiles(callback);
+		}
+	}
+
+/***/ },
+/* 34 */
+/***/ function(module, exports) {
+
+	/**
+	 * Return array of subfolders (one level down) in folder.
+	 * @param {folder} folder - ExtendScript folder reference.
+	 *
+	 * @return {folder[]} array of ExtendScript folders objects.
+	 */
+	module.exports = function(folder) {
+		//проверка на тип folder
+		return folder.getFiles(
+			function(f) {
+				return (f instanceof Folder);
+			}
+		);
+	}
+
+/***/ },
+/* 35 */
+/***/ function(module, exports) {
+
+	/**
+	 * Links or unlinks layer and its mask.
+	 * @param {layer}   layer - Photoshop layer reference.
+	 * @param {boolean} link  - true means layer and mask are linked, false means unlinked
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(layer, link) {
+	    // контроль типа входных параметров
+	    var currentLayer = app.activeDocument.activeLayer;
+	    app.activeDocument.activeLayer = layer;
+
+	    var idsetd = charIDToTypeID("setd");
+	    var desc294 = new ActionDescriptor();
+	    var idnull = charIDToTypeID("null");
+	    var ref171 = new ActionReference();
+	    var idLyr = charIDToTypeID("Lyr ");
+	    var idOrdn = charIDToTypeID("Ordn");
+	    var idTrgt = charIDToTypeID("Trgt");
+	    ref171.putEnumerated(idLyr, idOrdn, idTrgt);
+	    desc294.putReference(idnull, ref171);
+	    var idT = charIDToTypeID("T   ");
+	    var desc295 = new ActionDescriptor();
+	    var idUsrs = charIDToTypeID("Usrs");
+	    desc295.putBoolean(idUsrs, link);
+	    var idLyr = charIDToTypeID("Lyr ");
+	    desc294.putObject(idT, idLyr, desc295);
+	    executeAction(idsetd, desc294, DialogModes.NO);
+
+	    app.activeDocument.activeLayer = currentLayer;
+	}
+
+/***/ },
+/* 36 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Places file in active document as smart object.
+	 * @param {file}    file                            - ExtendScript file reference.
+	 * @param {layer}   [layer]                         - Adobe Photoshop layer reference.
+	 * @param {object}  [options]                       - options for the file placement.
+	 * @param {string}  [options.method = fill]         - "fill", "fit", "as is" or "conform".
+	 * @param {string}  [options.horizontal = center]   - "left", "center" or "right".
+	 * @param {string}  [options.vertical = center]     - "top", "center" or "bottom".
+	 * @param {boolean} [options.linked = false]        - true means linked file, false means embedded file.
+	 * @param {boolean} [options.copyLayerStyle = true] - valid only if layer param is supported, if true will copy layer style from layer to pasted file.
+	 *
+	 * @return {layer}
+	 */
+	module.exports = function(file, layer, options) {
+
+	    var setDocumentResolution = __webpack_require__(37);
+	    var resizeDocument = __webpack_require__(38);
+	    var alignLayer = __webpack_require__(30);
+	    var setSelectionByLayer = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./setSelectionByLayer.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	    var linkLayerWithMask = __webpack_require__(35);
+	    var layerHasMask = __webpack_require__(40);
+	    var transferLayerStyle = __webpack_require__(41);
+	    var setLayerMaskFromSelection = __webpack_require__(42);
+	    var getAppResizeOnPlace = __webpack_require__(43);
+	    var setAppResizeOnPlace = __webpack_require__(44);
+
+
+	    function scaleFactor(a, b, method) {
+	        var f = {
+	            'fill': Math.max(a.width / b.width, a.height / b.height),
+	            'fit': Math.min(a.width / b.width, a.height / b.height),
+	            'as is': 1,
+	            'conform': -1
+	        };
+	        return f[method];
+	    }
+
+	    // place linked and place embeded
+	    function place(f, linked) {
+	        if (linked) {
+	            var idPlc = charIDToTypeID("Plc ");
+	            var desc25 = new ActionDescriptor();
+	            var idnull = charIDToTypeID("null");
+	            desc25.putPath(idnull, f);
+	            var idLnkd = charIDToTypeID("Lnkd");
+	            desc25.putBoolean(idLnkd, true);
+	            var idFTcs = charIDToTypeID("FTcs");
+	            var idQCSt = charIDToTypeID("QCSt");
+	            var idQcsa = charIDToTypeID("Qcsa");
+	            desc25.putEnumerated(idFTcs, idQCSt, idQcsa);
+	            var idOfst = charIDToTypeID("Ofst");
+	            var desc26 = new ActionDescriptor();
+	            var idHrzn = charIDToTypeID("Hrzn");
+	            var idPxl = charIDToTypeID("#Pxl");
+	            desc26.putUnitDouble(idHrzn, idPxl, 0.000000);
+	            var idVrtc = charIDToTypeID("Vrtc");
+	            var idPxl = charIDToTypeID("#Pxl");
+	            desc26.putUnitDouble(idVrtc, idPxl, 0.000000);
+	            var idOfst = charIDToTypeID("Ofst");
+	            desc25.putObject(idOfst, idOfst, desc26);
+	            executeAction(idPlc, desc25, DialogModes.NO);
+	        } else {
+	            var idPlc = charIDToTypeID("Plc ");
+	            var desc141 = new ActionDescriptor();
+	            var idnull = charIDToTypeID("null");
+	            desc141.putPath(idnull, f);
+	            var idFTcs = charIDToTypeID("FTcs");
+	            var idQCSt = charIDToTypeID("QCSt");
+	            var idQcsa = charIDToTypeID("Qcsa");
+	            desc141.putEnumerated(idFTcs, idQCSt, idQcsa);
+	            var idOfst = charIDToTypeID("Ofst");
+	            var desc142 = new ActionDescriptor();
+	            var idHrzn = charIDToTypeID("Hrzn");
+	            var idPxl = charIDToTypeID("#Pxl");
+	            desc142.putUnitDouble(idHrzn, idPxl, 0.000000);
+	            var idVrtc = charIDToTypeID("Vrtc");
+	            var idPxl = charIDToTypeID("#Pxl");
+	            desc142.putUnitDouble(idVrtc, idPxl, 0.000000);
+	            var idOfst = charIDToTypeID("Ofst");
+	            desc141.putObject(idOfst, idOfst, desc142);
+	            executeAction(idPlc, desc141, DialogModes.NO);
+	        }
+	    }
+
+	    if (!file.exists) {
+	        throw ("File [" + File.decode(file.absoluteURI) + "] does not exist!");
+	    }
+
+	    var curentActiveDocument = app.activeDocument;
+	    var curentActiveLayer = app.activeDocument.activeLayer;
+	    var resizeDuringPlace = getAppResizeOnPlace();
+
+	    if (options !== void 0) {
+	        var method = options.method || "fill";
+	        var horizontal = options.horizontal || "center";
+	        var vertical = options.vertical || "center";
+	        var linked = (typeof options.linked === 'boolean') ? options.linked : false;
+	        var copyLayerStyle = (typeof options.copyLayerStyle === 'boolean') ? options.copyLayerStyle : true;
+	    } else {
+	        var method = "fill";
+	        var horizontal = "center";
+	        var vertical = "center";
+	        var linked = false;
+	        var copyLayerStyle = true;
+	    }
+
+
+	    if (layer !== void 0) {
+	        app.activeDocument.activeLayer = layer;
+	        //trying to set selection in a form of layer mask if not, will make it in a form of layer
+	        var selection = (layerHasMask(layer)) ? setSelectionByLayer(layer, 'mask') : setSelectionByLayer(layer, 'layer');
+	        // if selected layer is empty, select all 
+	        if (selection.reflect.find('bounds').dataType !== 'array') {
+	            selection.selectAll();
+	        }
+	    } else {
+	        // if no layer supported, select all 
+	        app.activeDocument.selection.selectAll();
+	        var selection = app.activeDocument.selection;
+	    }
+	    // Selection bounds must be in specific format if you whant Selection.select method work:
+	    // Array of x and y coordinates that describe the corners of the selection, in the format [[x1, y1], [x2,y2],[x3, y3], [x4,y4]]
+	    var selectionBounds = [];
+	    selectionBounds.push([selection.bounds[0].as('px'), selection.bounds[1].as('px')]);
+	    selectionBounds.push([selection.bounds[0].as('px'), selection.bounds[3].as('px')]);
+	    selectionBounds.push([selection.bounds[2].as('px'), selection.bounds[3].as('px')]);
+	    selectionBounds.push([selection.bounds[2].as('px'), selection.bounds[1].as('px')]);
+
+	    // calculating width and height to wich we need to resize placed file using method (fit, fill ...)
+	    var layerBounds = {
+	        width: (selection.bounds[2] - selection.bounds[0]),
+	        height: (selection.bounds[3] - selection.bounds[1])
+	    };
+
+	    // add empty layer where file will be placed
+	    app.activeDocument.activeLayer = app.activeDocument.artLayers.add();
+	    // switch off photoshop ability to automatic resize placed file, restore it later
+	    setAppResizeOnPlace(false);
+	    app.activeDocument.selection.deselect();
+
+	    place(file, linked);
+
+	    // calculating width and height of placed file and then resize this layer
+	    var pic = app.activeDocument.activeLayer;
+	    var picBounds = {
+	        width: (pic.bounds[2] - pic.bounds[0]),
+	        height: (pic.bounds[3] - pic.bounds[1])
+	    };
+
+	    var scale = scaleFactor(layerBounds, picBounds, method);
+	    if (scale > 0) {
+	        pic.resize(scale * 100, scale * 100);
+	    } else {
+	        pic.resize(100 * layerBounds.width / picBounds.width, 100 * layerBounds.height / picBounds.height);
+	    }
+
+	    // restore selection and align placed file according to this selection
+	    app.activeDocument.selection.select(selectionBounds);
+
+
+	    alignLayer(pic, {
+	        horizontal: horizontal,
+	        vertical: vertical
+	    });
+
+	    //mask placed file with layer mask and unlik it from mask
+	    setLayerMaskFromSelection(pic);
+	    linkLayerWithMask(pic, false);
+	    app.activeDocument.selection.deselect();
+
+	    // transfer layer effects if needed
+	    if (layer !== void 0 && copyLayerStyle) {
+	        transferLayerStyle(layer, pic);
+	    }
+
+	    // restore app state
+	    app.activeDocument = curentActiveDocument;
+	    app.activeDocument.activeLayer = curentActiveLayer;
+	    setAppResizeOnPlace(resizeDuringPlace);
+	    return pic;
+	}
+
+
+/***/ },
+/* 37 */
+/***/ function(module, exports) {
+
+	/**
+	 * Sets dpi in specified document.
+	 * @param {document} doc        - Adobe Photoshop document reference.
+	 * @param {double}   resolution - dot per inch.
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(doc, resolution) {
+		var currentDoc = app.activeDocument;
+		app.activeDocument = doc;
+
+		var idImgS = charIDToTypeID("ImgS");
+		var desc10 = new ActionDescriptor();
+		var idRslt = charIDToTypeID("Rslt");
+		var idRsl = charIDToTypeID("#Rsl");
+		desc10.putUnitDouble(idRslt, idRsl, resolution);
+		executeAction(idImgS, desc10, DialogModes.NO);
+
+		app.activeDocument = currentDoc;
+	}
+
+/***/ },
+/* 38 */
+/***/ function(module, exports) {
+
+	/**
+	 * Resizes active document using props.
+	 * @param {document}   doc                               - Adobe Photoshop document reference.
+	 * @param {object}     props                             - object with resize parameters.
+	 * @param {unit value} props.widht                       - new width of active document.
+	 * @param {unit value} props.height                      - new height of active document.
+	 * @param {boolean}    [props.constrainProportions=true] - if true will constrain proportions of a document
+	 * @param {boolean}    [props.scaleStyles=true]          - if true will scale layer styles.
+	 * @param {string}     [props.method=bicubicAutomatic]   - which method of resampling to use: nearest|bilinear|bicubic|bicubicSmoother|bicubicSharper|bicubicAutomatic
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(doc, props) {
+
+	    var currentDoc = app.activeDocument;
+	    app.activeDocument = doc;
+	    var interpMethodsMap = {
+	        nearest: charIDToTypeID("Nrst"),
+	        bilinear: charIDToTypeID("Blnr"),
+	        bicubic: charIDToTypeID("Bcbc"),
+	        bicubicSmoother: stringIDToTypeID("bicubicSmoother"),
+	        bicubicSharper: stringIDToTypeID("bicubicSharper"),
+	        bicubicAutomatic: stringIDToTypeID("bicubicAutomatic"),
+	    };
+
+	    var proportion = ('constrainProportions' in props) ? props.constrainProportions : true;
+	    var scaleStyles = ('scaleStyles' in props) ? props.scaleStyles : true;
+
+	    var method = (interpMethodsMap[props.method]) ? interpMethodsMap[props.method] : interpMethodsMap['bicubicAutomatic'];
+	    var width = props.width;
+	    var height = props.height;
+
+	    if (!proportion) {
+	        var idImgS = charIDToTypeID("ImgS");
+	        var desc13 = new ActionDescriptor();
+	        var idWdth = charIDToTypeID("Wdth");
+	        var idPxl = charIDToTypeID("#Pxl");
+	        desc13.putUnitDouble(idWdth, idPxl, width.as("px"));
+	        var idHght = charIDToTypeID("Hght");
+	        var idPxl = charIDToTypeID("#Pxl");
+	        desc13.putUnitDouble(idHght, idPxl, height.as("px"));
+	        var idIntr = charIDToTypeID("Intr");
+	        var idIntp = charIDToTypeID("Intp");
+	        var idbicubicAutomatic = method;
+	        desc13.putEnumerated(idIntr, idIntp, idbicubicAutomatic);
+	        executeAction(idImgS, desc13, DialogModes.NO);
+	    } else {
+	        if (height !== undefined) {
+	            var idImgS = charIDToTypeID("ImgS");
+	            var desc12 = new ActionDescriptor();
+	            var idHght = charIDToTypeID("Hght");
+	            var idPxl = charIDToTypeID("#Pxl");
+	            desc12.putUnitDouble(idHght, idPxl, height.as("px"));
+	            var idscaleStyles = stringIDToTypeID("scaleStyles");
+	            desc12.putBoolean(idscaleStyles, scaleStyles);
+	            var idCnsP = charIDToTypeID("CnsP");
+	            desc12.putBoolean(idCnsP, true);
+	            var idIntr = charIDToTypeID("Intr");
+	            var idIntp = charIDToTypeID("Intp");
+	            var idbicubicAutomatic = method;
+	            desc12.putEnumerated(idIntr, idIntp, idbicubicAutomatic);
+	            executeAction(idImgS, desc12, DialogModes.NO);
+	        }
+
+	        if (width !== undefined) {
+	            var idImgS = charIDToTypeID("ImgS");
+	            var desc11 = new ActionDescriptor();
+	            var idWdth = charIDToTypeID("Wdth");
+	            var idPxl = charIDToTypeID("#Pxl");
+	            desc11.putUnitDouble(idWdth, idPxl, width.as("px"));
+	            var idscaleStyles = stringIDToTypeID("scaleStyles");
+	            desc11.putBoolean(idscaleStyles, scaleStyles);
+	            var idCnsP = charIDToTypeID("CnsP");
+	            desc11.putBoolean(idCnsP, true);
+	            var idIntr = charIDToTypeID("Intr");
+	            var idIntp = charIDToTypeID("Intp");
+	            var idbicubicAutomatic = method;
+	            desc11.putEnumerated(idIntr, idIntp, idbicubicAutomatic);
+	            executeAction(idImgS, desc11, DialogModes.NO);
+	        }
+	    }
+	    app.activeDocument = currentDoc;
+	}
+
+/***/ },
+/* 39 */,
+/* 40 */
+/***/ function(module, exports) {
+
+	/**
+	 * Check if layer has layers mask.
+	 * @param {layer} layer - layer to check.
+	 *
+	 * @return {Boolean} 
+	 */
+	module.exports = function(layer) {
+	    var curentActiveLayer = app.activeDocument.activeLayer;
+	    app.activeDocument.activeLayer = layer;
+	    var ref = new ActionReference();
+	    var descr = new ActionDescriptor();
+	    ref.putProperty(charIDToTypeID('Prpr'), charIDToTypeID('UsrM'));
+	    ref.putEnumerated(charIDToTypeID('Lyr '), charIDToTypeID('Ordn'), charIDToTypeID('Trgt'));
+	    descr.putReference(charIDToTypeID('null'), ref);
+	    var resultDesc = executeAction(charIDToTypeID('getd'), descr, DialogModes.NO);
+
+	    app.activeDocument.activeLayer = curentActiveLayer;
+	    return resultDesc.hasKey(charIDToTypeID('UsrM'));
+	}
+
+
+/***/ },
+/* 41 */
+/***/ function(module, exports) {
+
+	/**
+	 * Transfers layer style from one layer to another.
+	 * @param {layer} from - layer donor of layer style.
+	 * @param {layer} to   - layer recipient of layer style.
+	 *
+	 * @return {boolean} returns true if layer style transfer was succesfull, false otherwise.
+	 */
+	module.exports = function(from, to) {
+		var currentLayer = app.activeDocument.activeLayer;
+		try {
+			app.activeDocument.activeLayer = from;
+			var idCpFX = charIDToTypeID("CpFX");
+			executeAction(idCpFX, undefined, DialogModes.NO);
+
+			app.activeDocument.activeLayer = to;
+			var idPaFX = charIDToTypeID("PaFX");
+			var desc22 = new ActionDescriptor();
+			var idallowPasteFXOnLayerSet = stringIDToTypeID("allowPasteFXOnLayerSet");
+			desc22.putBoolean(idallowPasteFXOnLayerSet, true);
+			executeAction(idPaFX, desc22, DialogModes.NO);
+		} catch (e) {
+			app.activeDocument.activeLayer = currentLayer;
+			return false;
+		}
+		app.activeDocument.activeLayer = currentLayer;
+		return true;
+	}
+
+/***/ },
+/* 42 */
+/***/ function(module, exports) {
+
+	/**
+	 * Set layer mask from active selection.
+	 * @param {layer} layer - Adobe Photoshop layer reference.
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(layer) {
+	    var currentLayer = app.activeDocument.activeLayer;
+	    app.activeDocument.activeLayer = layer;
+
+	    var idMk = charIDToTypeID("Mk  ");
+	    var desc29 = new ActionDescriptor();
+	    var idNw = charIDToTypeID("Nw  ");
+	    var idChnl = charIDToTypeID("Chnl");
+	    desc29.putClass(idNw, idChnl);
+	    var idAt = charIDToTypeID("At  ");
+	    var ref14 = new ActionReference();
+	    var idChnl = charIDToTypeID("Chnl");
+	    var idChnl = charIDToTypeID("Chnl");
+	    var idMsk = charIDToTypeID("Msk ");
+	    ref14.putEnumerated(idChnl, idChnl, idMsk);
+	    desc29.putReference(idAt, ref14);
+	    var idUsng = charIDToTypeID("Usng");
+	    var idUsrM = charIDToTypeID("UsrM");
+	    var idRvlS = charIDToTypeID("RvlS");
+	    desc29.putEnumerated(idUsng, idUsrM, idRvlS);
+	    executeAction(idMk, desc29, DialogModes.NO);
+
+	    app.activeDocument.activeLayer = currentLayer;
+	}
+
+/***/ },
+/* 43 */
+/***/ function(module, exports) {
+
+	/**
+	 * Gets value of photoshop general preference "Resize Image During Place"
+	 *
+	 * @return {boolean}
+	 */
+	module.exports = function() {
+	    var ref28 = new ActionReference();
+	    ref28.putProperty(charIDToTypeID("Prpr"), charIDToTypeID("GnrP"));
+	    ref28.putEnumerated(charIDToTypeID("capp"), charIDToTypeID("Ordn"), charIDToTypeID("Trgt"));
+	    var desc65 = new ActionDescriptor();
+	    desc65.putReference(charIDToTypeID("null"), ref28);
+	    var resultDesc = executeAction(charIDToTypeID("getd"), desc65, DialogModes.NO);
+	    return resultDesc.getObjectValue(charIDToTypeID("GnrP")).getBoolean(stringIDToTypeID("resizePastePlace"));
+	}
+
+
+/***/ },
+/* 44 */
+/***/ function(module, exports) {
+
+	/**
+	 * Sets photoshop general preference "Resize Image During Place"
+	 * @param {boolean} checked - true means checked, false - unckecked
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(checked) {
+	    var idsetd = charIDToTypeID("setd");
+	    var desc65 = new ActionDescriptor();
+	    var idnull = charIDToTypeID("null");
+	    var ref28 = new ActionReference();
+	    var idPrpr = charIDToTypeID("Prpr");
+	    var idGnrP = charIDToTypeID("GnrP");
+	    ref28.putProperty(idPrpr, idGnrP);
+	    var idcapp = charIDToTypeID("capp");
+	    var idOrdn = charIDToTypeID("Ordn");
+	    var idTrgt = charIDToTypeID("Trgt");
+	    ref28.putEnumerated(idcapp, idOrdn, idTrgt);
+	    desc65.putReference(idnull, ref28);
+	    var idT = charIDToTypeID("T   ");
+	    var desc66 = new ActionDescriptor();
+	    var idresizePastePlace = stringIDToTypeID("resizePastePlace");
+	    desc66.putBoolean(idresizePastePlace, checked);
+	    var idlegacyPathDrag = stringIDToTypeID("legacyPathDrag");
+	    desc66.putBoolean(idlegacyPathDrag, true);
+	    var idvectorSelectionModifiesLayerSelection = stringIDToTypeID("vectorSelectionModifiesLayerSelection");
+	    desc66.putBoolean(idvectorSelectionModifiesLayerSelection, true);
+	    var idGnrP = charIDToTypeID("GnrP");
+	    desc65.putObject(idT, idGnrP, desc66);
+	    executeAction(idsetd, desc65, DialogModes.NO);
+	}
+
+
+/***/ },
+/* 45 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Places file in active document as smart object.
+	 * @param {file}    file                          - ExtendScript file reference.
+	 * @param {layer}   layer                         - Adobe Photoshop layer reference.
+	 * @param {object}  [options]                     - options for the file placement.
+	 * @param {string}  [options.method = fill]       - "fill", "fit", "as is" or "conform".
+	 * @param {string}  [options.horizontal = center] - horizontal alignment "left", "center" or "right".
+	 * @param {string}  [options.vertical = center]   - vertical alignment "top", "center" or "bottom".
+	 * @param {boolean} [options.revealAll = true]    - revealAll in smart objects document
+	 * 
+	 * @return {undefined}
+	 */
+	module.exports = function(file, layer, options) {
+
+	    var setDocumentResolution = __webpack_require__(37);
+	    var resizeDocument = __webpack_require__(38);
+	    var alignLayer = __webpack_require__(30);
+	    var setSelectionByLayer = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./setSelectionByLayer.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	    var linkLayerWithMask = __webpack_require__(35);
+	    var layerHasMask = __webpack_require__(40);
+	    var setLayerMaskVisibility = __webpack_require__(46);
+	    var placeFile = __webpack_require__(36);
+
+	    function replace(f) {
+	        var idplacedLayerReplaceContents = stringIDToTypeID("placedLayerReplaceContents");
+	        var desc4 = new ActionDescriptor();
+	        var idnull = charIDToTypeID("null");
+	        desc4.putPath(idnull, f);
+	        executeAction(idplacedLayerReplaceContents, desc4, DialogModes.NO);
+	    }
+
+	    function scaleFactor(a, b, method) {
+	        var f = {
+	            'fill': Math.max(a.width / b.width, a.height / b.height),
+	            'fit': Math.min(a.width / b.width, a.height / b.height),
+	            'as is': 1,
+	            'conform': -1
+	        };
+	        return f[method];
+	    }
+
+
+	    if (!file.exists) {
+	        throw ("File [" + File.decode(file.absoluteURI) + "] does not exist!");
+	    }
+
+	    if (layer !== void 0 && layer.kind === LayerKind.SMARTOBJECT) {
+	        if (options !== void 0) {
+	            var method = options.method || "fill";
+	            var horizontal = options.horizontal || "center";
+	            var vertical = options.vertical || "center";
+	            var revealAll = !!options.revealAll;
+	        } else {
+	            var method = "fill";
+	            var horizontal = "center";
+	            var vertical = "center";
+	            var revealAll = true;
+	        }
+
+	        var curentActiveDocument = app.activeDocument;
+	        var curentActiveLayer = app.activeDocument.activeLayer;
+
+	        app.activeDocument.activeLayer = layer;
+	        if (revealAll) {
+	            replace(file);
+	            if (layerHasMask(layer)) {
+	                linkLayerWithMask(layer, false);
+	                setLayerMaskVisibility(layer, false);
+	                var selection = setSelectionByLayer(layer, 'mask');
+	                var selectionBounds = [];
+	                selectionBounds.push([selection.bounds[0].as('px'), selection.bounds[1].as('px')]);
+	                selectionBounds.push([selection.bounds[0].as('px'), selection.bounds[3].as('px')]);
+	                selectionBounds.push([selection.bounds[2].as('px'), selection.bounds[3].as('px')]);
+	                selectionBounds.push([selection.bounds[2].as('px'), selection.bounds[1].as('px')]);
+
+	                var maskBounds = {
+	                    width: (selection.bounds[2] - selection.bounds[0]),
+	                    height: (selection.bounds[3] - selection.bounds[1])
+	                };
+
+	                var picBounds = {
+	                    width: (layer.bounds[2] - layer.bounds[0]),
+	                    height: (layer.bounds[3] - layer.bounds[1])
+	                };
+	                app.activeDocument.selection.deselect();
+	                var scale = scaleFactor(maskBounds, picBounds, method);
+	                if (scale > 0) {
+	                    layer.resize(scale * 100, scale * 100);
+	                } else {
+	                    layer.resize(100 * maskBounds.width / picBounds.width, 100 * maskBounds.height / picBounds.height);
+	                }
+
+	                app.activeDocument.selection.select(selectionBounds);
+	                alignLayer(layer, {
+	                    horizontal: horizontal,
+	                    vertical: vertical
+	                });
+	                setLayerMaskVisibility(layer, true);
+	                app.activeDocument.selection.deselect();
+	            }
+
+	        } else {
+	            // it will open new document (smart object) and will make it active 
+	            executeAction(stringIDToTypeID("placedLayerEditContents"), new ActionDescriptor(), DialogModes.NO);
+	            var so = app.activeDocument;
+	            var placedLayer = placeFile(file, undefined, { method: method, horizontal: horizontal, vertical: vertical, linked: false });
+	            placedLayer.move(so.layers[0], ElementPlacement.PLACEBEFORE);
+	            so.close(SaveOptions.SAVECHANGES);
+	        }
+
+	    }
+	    app.activeDocument = curentActiveDocument;
+	    app.activeDocument.activeLayer = curentActiveLayer;
+	}
+
+
+/***/ },
+/* 46 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Disables or enables layers mask if present
+	 * @param {layer}   layer - Photoshop layer reference.
+	 * @param {boolean} link  - true enable mask, false disable
+	 *
+	 * @return {undefined}
+	 */
+	module.exports = function(layer, visible) {
+	    // контроль типа входных параметров
+	    var layerHasMask = __webpack_require__(40);
+	    if (layerHasMask(layer)) {
+	        var currentLayer = app.activeDocument.activeLayer;
+	        app.activeDocument.activeLayer = layer;
+
+	        var idsetd = charIDToTypeID("setd");
+	        var desc7 = new ActionDescriptor();
+	        var idnull = charIDToTypeID("null");
+	        var ref4 = new ActionReference();
+	        var idLyr = charIDToTypeID("Lyr ");
+	        var idOrdn = charIDToTypeID("Ordn");
+	        var idTrgt = charIDToTypeID("Trgt");
+	        ref4.putEnumerated(idLyr, idOrdn, idTrgt);
+	        desc7.putReference(idnull, ref4);
+	        var idT = charIDToTypeID("T   ");
+	        var desc8 = new ActionDescriptor();
+	        var idUsrM = charIDToTypeID("UsrM");
+	        desc8.putBoolean(idUsrM, visible);
+	        var idLyr = charIDToTypeID("Lyr ");
+	        desc7.putObject(idT, idLyr, desc8);
+	        executeAction(idsetd, desc7, DialogModes.NO);
+	        app.activeDocument.activeLayer = currentLayer;
+	    }
+	}
 
 
 /***/ }
